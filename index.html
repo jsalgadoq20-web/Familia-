@@ -13,15 +13,17 @@
             margin: 0; padding: 0;
             overflow: hidden;
             display: flex; flex-direction: column; align-items: center;
+            justify-content: center;
             min-height: 100vh;
+            transition: background-color 1s ease;
         }
         
-        /* Contenedor de decoraciones de fondo */
         #bg-decoration {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
             pointer-events: none;
+            transition: opacity 1s ease;
         }
 
         .deco-item {
@@ -37,24 +39,28 @@
         }
 
         h1 { 
-            color: #444; z-index: 10; margin-top: 50px; 
+            color: #444; z-index: 10; margin-top: 20px; 
             background: rgba(253, 252, 240, 0.8);
-            padding: 10px; border-radius: 15px;
+            padding: 10px 20px; border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: opacity 1s ease, transform 1s ease;
         }
         
         .container {
             display: flex; flex-wrap: wrap; justify-content: center;
             gap: 25px; max-width: 350px; margin-top: 30px; z-index: 10;
             position: relative;
+            transition: opacity 1s ease, transform 1s ease;
         }
         
-        /* Globos */
-        .balloon-wrapper { animation: float 3s infinite ease-in-out; z-index: 10; }
+        .balloon-wrapper { animation: float 3s infinite ease-in-out; z-index: 10; transition: transform 0.5s ease, opacity 0.5s ease; }
         .balloon { 
             position: relative; width: 85px; height: 110px; 
             border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
             cursor: pointer; box-shadow: 2px 5px 12px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease;
         }
+        .balloon:hover { transform: scale(1.05); }
         .balloon::after {
             content: ""; position: absolute; bottom: -10px; left: 50%;
             transform: translateX(-50%); border-left: 7px solid transparent;
@@ -67,10 +73,37 @@
 
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        #result-screen { display: none; z-index: 20; margin-top: 60px; position: relative; }
-        #msg { font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; }
+        #result-screen { 
+            display: none; z-index: 20; margin-top: 20px; position: relative; 
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        #msg { font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        #subtitle { font-size: 1.5rem; margin-bottom: 25px; color: #555; }
+        #welcome-text { font-size: 2rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+        #baby-name { font-size: 2.5rem; font-weight: 900; color: #007bff; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+        
         .boy { color: #2980b9; } .girl { color: #d81b60; }
-        button { padding: 15px 30px; border-radius: 30px; cursor: pointer; border: none; background: #444; color: white; font-weight: bold; font-size: 1rem; }
+        button { 
+            padding: 15px 35px; border-radius: 30px; cursor: pointer; border: none; 
+            background: linear-gradient(to right, #444, #666); color: white; 
+            font-weight: bold; font-size: 1.1rem; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.3); background: linear-gradient(to right, #555, #777); }
+        button:active { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        .result-icon { font-size: 3rem; margin: 0 10px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -83,23 +116,27 @@
 
     <div id="result-screen">
         <div id="msg"></div>
+        <div id="subtitle"></div>
+        <div id="welcome-text"></div>
+        <div id="baby-name"></div>
         <button onclick="location.reload()">¿Jugar otra vez? 🔄</button>
     </div>
 
     <script>
-        const ES_NINA = true; // <--- CAMBIAR AQUÍ (true = Niña, false = Niño)
+        const ES_NINA = false; // Resultado fijado a NIÑO
+        const NOMBRE_BEBE = "Elías David Rojas Fuenzalida";
         
         const decoContainer = document.getElementById('bg-decoration');
-        const items = ['🚗', '🎀', '🚗', '🎀', '🚗', '🎀', '🚗', '🎀'];
+        const items = ['🚗', '🎀', '🧸', '🍼', '👣', '✨'];
 
-        // Crear decoraciones por toda la pantalla
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 20; i++) {
             const span = document.createElement('span');
             span.className = 'deco-item';
             span.innerText = items[Math.floor(Math.random() * items.length)];
-            span.style.left = Math.random() * 90 + '%';
-            span.style.top = Math.random() * 90 + '%';
+            span.style.left = Math.random() * 95 + '%';
+            span.style.top = Math.random() * 95 + '%';
             span.style.animationDelay = Math.random() * 5 + 's';
+            span.style.fontSize = (Math.random() * 20 + 20) + 'px';
             decoContainer.appendChild(span);
         }
 
@@ -114,29 +151,87 @@
             balloon.className = i % 2 === 0 ? 'balloon balloon-pink' : 'balloon balloon-blue';
             
             balloon.onclick = function() {
-                if (i === ganador) { revelar(); } 
-                else {
+                if (i === ganador) { 
+                    revelar(wrapper); 
+                } else {
                     wrapper.style.transform = "scale(0)";
                     wrapper.style.opacity = "0";
-                    setTimeout(() => wrapper.style.display = "none", 200);
+                    setTimeout(() => wrapper.style.display = "none", 500);
                 }
             };
             wrapper.appendChild(balloon);
             board.appendChild(wrapper);
         }
 
-        function revelar() {
-            const color = ES_NINA ? '#ff4081' : '#40c4ff';
-            confetti({ particleCount: 250, spread: 100, origin: { y: 0.5 }, colors: [color, '#ffffff', '#FFD700'] });
+        function revelar(ganadorWrapper) {
+            ganadorWrapper.style.zIndex = 100;
+            ganadorWrapper.style.transform = "scale(1.2)";
             
-            document.body.style.backgroundColor = ES_NINA ? '#ffebee' : '#e3f2fd';
-            board.style.display = 'none';
-            document.getElementById('bg-decoration').style.display = 'none';
-            document.getElementById('title').style.display = 'none';
-            
-            document.getElementById('msg').innerText = ES_NINA ? '¡ES NIÑA! 🎀' : '¡ES NIÑO! ⚽';
-            document.getElementById('msg').className = ES_NINA ? 'girl' : 'boy';
-            document.getElementById('result-screen').style.display = 'block';
+            setTimeout(() => {
+                ganadorWrapper.style.transform = "scale(0)";
+                ganadorWrapper.style.opacity = "0";
+                
+                const color = ES_NINA ? '#ff4081' : '#40c4ff';
+                const end = Date.now() + (3 * 1000);
+
+                // Lluvia de confeti continua
+                (function frame() {
+                    confetti({
+                        particleCount: 10,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: [color, '#ffffff', '#FFD700']
+                    });
+                    confetti({
+                        particleCount: 10,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: [color, '#ffffff', '#FFD700']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+                
+                document.body.style.backgroundColor = ES_NINA ? '#fff0f3' : '#e8f4fd';
+                board.style.opacity = '0';
+                board.style.transform = 'translateY(20px)';
+                document.getElementById('bg-decoration').style.opacity = '0';
+                document.getElementById('title').style.opacity = '0';
+                document.getElementById('title').style.transform = 'translateY(-20px)';
+
+                setTimeout(() => {
+                    board.style.display = 'none';
+                    document.getElementById('bg-decoration').style.display = 'none';
+                    document.getElementById('title').style.display = 'none';
+
+                    const msgElement = document.getElementById('msg');
+                    const subtitleElement = document.getElementById('subtitle');
+                    const welcomeTextElement = document.getElementById('welcome-text');
+                    const babyNameElement = document.getElementById('baby-name');
+
+                    if (ES_NINA) {
+                        msgElement.innerHTML = '<span class="result-icon">🎀</span> ¡ES NIÑA! <span class="result-icon">🎀</span>';
+                        msgElement.className = 'girl';
+                        subtitleElement.innerText = '¡Una hermosa princesa está en camino!';
+                        babyNameElement.style.color = '#d81b60';
+                    } else {
+                        msgElement.innerHTML = '<span class="result-icon">⚽</span> ¡ES NIÑO! <span class="result-icon">🧸</span>';
+                        msgElement.className = 'boy';
+                        subtitleElement.innerText = '¡Un pequeño campeón viene en camino!';
+                        babyNameElement.style.color = '#2980b9';
+                    }
+
+                    // Actualización del orden del texto
+                    welcomeTextElement.innerText = '¡Bienvenido al mundo!';
+                    babyNameElement.innerText = NOMBRE_BEBE;
+                    
+                    document.getElementById('result-screen').style.display = 'block';
+                }, 800); 
+            }, 300);
         }
     </script>
 </body>
